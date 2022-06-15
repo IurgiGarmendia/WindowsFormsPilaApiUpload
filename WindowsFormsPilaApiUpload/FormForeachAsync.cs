@@ -45,9 +45,9 @@ namespace WindowsFormsPilaApiUpload
             //label1.Text = emaitza;
 
 
-            var progress = new Progress<int>(percent =>
+            var progress = new Progress<string>(percent =>
             {
-                textBox1.Text = percent + " file";
+                textBox1.Text = percent + " subiendo";
             });
 
 
@@ -99,7 +99,7 @@ namespace WindowsFormsPilaApiUpload
         }
 
 
-        public async Task<string> AsyncIgoHttpClientDemo(string file, string filename, IProgress<int> progress, int i)
+        public async Task<string> AsyncIgoHttpClientDemo(string file, string filename, IProgress<string> progress, int i)
         {
             //string postURL = "http://intranetsrv/pilaapi/api/InsertJob";
             //string postURL = "http://localhost:52610/api/InsertJob";
@@ -107,7 +107,7 @@ namespace WindowsFormsPilaApiUpload
 
             if (progress != null)
             {
-                progress.Report(i);
+                progress.Report(filename);
             }
 
 
