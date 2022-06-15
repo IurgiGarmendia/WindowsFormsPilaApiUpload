@@ -21,8 +21,8 @@ namespace WindowsFormsPilaApiUpload
         FrmOpen frm_2 = new FrmOpen();
         string file = @"C:\Users\igarmendia.LASER\Desktop\PilaTask\winrar4.rar";
         string filename = "winrar4.rar";
-        //string postURL = "http://intranetsrv/pilaapi/api/InsertJob";
-        string postURL = "http://localhost:52610/api/InsertJob";
+        string postURL = "http://intranetsrv/pilaapi/api/InsertJob";
+        //string postURL = "http://localhost:52610/api/InsertJob";
         public Form1()
         {
             InitializeComponent();
