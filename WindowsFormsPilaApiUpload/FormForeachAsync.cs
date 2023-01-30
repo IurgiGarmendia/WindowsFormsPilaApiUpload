@@ -120,6 +120,14 @@ namespace WindowsFormsPilaApiUpload
             fs.Close();
 
 
+
+            FileStream fsa = new FileStream(@"C: \Users\igarmendia\source\repos\WindowsFormsPilaApiUpload\cargarIntranet\sync2.zip", FileMode.Open, FileAccess.Read);
+            byte[] dataa = new byte[fsa.Length];
+            fsa.Read(dataa, 0, dataa.Length);
+            fsa.Close();
+
+
+
             //HttpContent stringContent = new StringContent(postParameters);
             HttpContent stringContent1 = new StringContent("12333123");
             HttpContent stringContent2 = new StringContent("5");
@@ -127,6 +135,7 @@ namespace WindowsFormsPilaApiUpload
             HttpContent stringContent4 = new StringContent("a-20309795");
             //HttpContent fileStreamContent = new StreamContent(fs);
             HttpContent bytesContent = new ByteArrayContent(data);
+            HttpContent bytesContenta = new ByteArrayContent(dataa);
             //var response=null;
             using (var client = new HttpClient())
             using (var formData = new MultipartFormDataContent())
@@ -137,6 +146,7 @@ namespace WindowsFormsPilaApiUpload
                 formData.Add(stringContent4, "cif");
                 //formData.Add(fileStreamContent, file, filename);
                 formData.Add(bytesContent, file, filename);
+                formData.Add(bytesContenta, "to_file", "to_filename");
                 var response = await client.PostAsync(postURL, formData);
                 //response.Wait();
 
@@ -195,9 +205,69 @@ namespace WindowsFormsPilaApiUpload
             //        Console.WriteLine(result.StatusCode);
             //    }
             //}
-
+            //if (label7.InvokeRequired)
+            //{
+                String name = emaitza;
+                label7.Invoke(new MethodInvoker(delegate { label7.Text = name; }));
+            //}
             return emaitza;
 
+        }
+
+        private async void button2_Click(object sender, EventArgs e)
+        {
+            HttpClient client = new HttpClient();
+            string filePath= @"\\intranetsrv\datos\PilaApi\klientakinJeistia";
+            string fileName = "klientakinJeistia.dxf";
+            
+            HttpResponseMessage response = await client.GetAsync("http://localhost:52610/Pila/GetBookForHRM/dxf");
+            if (response.IsSuccessStatusCode)
+            {
+                var inputStream = await response.Content.ReadAsStreamAsync();
+
+                string path = Path.Combine(filePath, fileName);
+                using (FileStream outputFileStream = new FileStream(path, FileMode.Create))
+                {
+                    inputStream.CopyTo(outputFileStream);
+                }
+            }
+            
+        }
+        //https://medium.com/@deep_blue_day/how-to-read-multipart-mime-data-from-httpresponsemessage-in-net-standard-9664904a7ca9
+        private async void button3_Click(object sender, EventArgs e)
+        {
+            HttpClient client = new HttpClient();
+            string filePath1 = @"\\intranetsrv\datos\PilaApi\klientakinJeistia";
+            string fileName1 = "sample.pdf";
+
+            string filePath2 = @"\\intranetsrv\datos\PilaApi\klientakinJeistia";
+            string fileName2 = "sample.zip";
+
+
+            HttpResponseMessage response = await client.GetAsync("http://localhost:52610/Pila/GetMulti");
+            if (response.IsSuccessStatusCode)
+            {
+                var inputStream = await response.Content.ReadAsMultipartAsync();
+
+                var streamContent0 = await inputStream.Contents[0].ReadAsStringAsync();
+                var streamContent1 = await inputStream.Contents[1].ReadAsStreamAsync();
+                var streamContent2 = await inputStream.Contents[2].ReadAsStreamAsync();
+
+                string path1 = Path.Combine(filePath1, fileName1);
+                using (FileStream outputFileStream = new FileStream(path1, FileMode.Create))
+                {
+                    streamContent1.CopyTo(outputFileStream);
+                }
+
+                string path2 = Path.Combine(filePath2, fileName2);
+                using (FileStream outputFileStream = new FileStream(path2, FileMode.Create))
+                {
+                    streamContent2.CopyTo(outputFileStream);
+                }
+
+
+
+            }
         }
     }
 }
